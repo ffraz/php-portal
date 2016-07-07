@@ -30,7 +30,7 @@ else {
 	// Send a passive authentication request.
 	//if() {
 	//	$as->login(array(
-	//		'forceAuth' => TRUE,
+	//		'ForceAuthn' => TRUE,
 	//		'isPassive' => TRUE,
 	//	));
 	//}
