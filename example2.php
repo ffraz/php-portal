@@ -3,7 +3,8 @@
 include_once('/home/ffraz/apps/simplesamlphp/lib/_autoload.php');
 
 // Parameters
-$title = 'SimpleSAMLphp Example SAML SP';
+$sesTimeout = 1200; // 20 minutes
+$sesRefresh = 120; // 2 minutes
 
 // Functions
 function toTimestamp($data) {
@@ -35,6 +36,16 @@ if (!$valid_saml_session) {
 			'SessionIndex' => $auth->getAuthData('saml:sp:SessionIndex'),
 	);
 	
+	// Send a passive authentication request
+	$expTime = $miscs['Expire'];
+	$curTime = time();
+	if (($expTime - $curTime) <= ($sesTimeout - $sesRefresh)) {
+		$auth->login(array(
+				'ForceAuthn' => TRUE,
+				'isPassive'  => TRUE,
+		));
+	}
+		
 	// Retrieve the attributes of the current user
 	$attrs = $auth->getAttributes();
 	
@@ -50,12 +61,12 @@ if (!$valid_saml_session) {
 <html lang="en">
 
 <head>
-<title><?= $title ?></title>
+<title>SimpleSAMLphp Example SAML SP</title>
 <meta charset="utf-8">
 </head>
 
 <body style="Arial,Helvetica Neue,Helvetica,sans-serif; font-size: 18;">
-<h1 style="font-family: Arial Black,Arial Bold,Gadget,sans-serif; color: blue;"><?= $title ?></h1>
+<h1 style="font-family: Arial Black,Arial Bold,Gadget,sans-serif; color: blue;">SimpleSAMLphp Example SAML SP</h1>
 
 <?php
 if (!$valid_saml_session) {
@@ -66,6 +77,11 @@ if (!$valid_saml_session) {
 	
 	// Logged in
 	echo '<h2>Welcome, ' . $name . '</h2>';
+	
+	// Test
+	$expTime = $miscs['Expire'];
+	$curTime = time();
+	echo 'Zostava: ' . gmdate("i", ($expTime - $curTime)) . ' minut.';
 	
 	// Miscellaneous
 	echo '<h3 style="font-family: Consolas,monaco,monospace; text-decoration: underline; color: red;">Miscellaneous:</h3>';
